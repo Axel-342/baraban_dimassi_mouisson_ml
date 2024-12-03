@@ -12,10 +12,10 @@ ages = []
 heights = []
 colors = []
 
-# Boucle sur les années de 1978 à 2024
-for year in range(1978, 2025):
+# Boucle sur les années de 1968 à 2024
+for year in range(1968, 2025):
     # Charger les données de l'année correspondante
-    file_name = f"atp_matches_qual_chall_{year}.csv"
+    file_name = f"atp_matches_{year}.csv"
     
     # Vérifier si le fichier existe avant de le traiter
     if os.path.exists(file_name):
