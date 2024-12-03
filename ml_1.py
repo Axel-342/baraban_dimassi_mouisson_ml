@@ -1,79 +1,67 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+import os
 
-# Charger le fichier CSV
-file_2023 = "atp_matches_qual_chall_2023.csv"
-df_2023 = pd.read_csv(file_2023)
+# Créer un dictionnaire pour les couleurs basées sur la main dominante
+color_map = {'R': 'red', 'L': 'blue', 'U': 'grey'}
 
-# Garder uniquement les colonnes demandées (sans winner_ioc)
-filtered_df = df_2023[['winner_hand', 'winner_ht', 'winner_age']]
+# Initialiser les listes pour les données à tracer
+years = []
+ages = []
+heights = []
+colors = []
 
-# Combler les valeurs manquantes dans 'winner_ht' par la moyenne de cette colonne
-filtered_df['winner_ht'] = filtered_df['winner_ht'].fillna(filtered_df['winner_ht'].mean())
+# Boucle sur les années de 1978 à 2024
+for year in range(1978, 2025):
+    # Charger les données de l'année correspondante
+    file_name = f"atp_matches_qual_chall_{year}.csv"
+    
+    # Vérifier si le fichier existe avant de le traiter
+    if os.path.exists(file_name):
+        df = pd.read_csv(file_name)
+        
+        # Garder uniquement les colonnes pertinentes
+        filtered_df = df[['winner_hand', 'winner_ht', 'winner_age']]
+        
+        # Combler les valeurs manquantes dans 'winner_ht' par la moyenne de cette colonne
+        filtered_df['winner_ht'] = filtered_df['winner_ht'].fillna(filtered_df['winner_ht'].mean())
+        
+        # Encoder la colonne 'winner_hand' pour déterminer les couleurs
+        le_hand = LabelEncoder()
+        filtered_df['winner_hand_encoded'] = le_hand.fit_transform(filtered_df['winner_hand'].fillna("U"))
+        
+        # Calculer les valeurs moyennes pour chaque année
+        average_age = filtered_df['winner_age'].mean()
+        average_height = filtered_df['winner_ht'].mean()
+        most_common_hand = filtered_df['winner_hand'].mode()[0]  # Main dominante la plus fréquente
+        
+        # Ajouter les valeurs pour le graphique
+        years.append(year)
+        ages.append(average_age)
+        heights.append(average_height)
+        colors.append(color_map.get(most_common_hand, 'grey'))  # Assigner la couleur de la main dominante
 
-# Sauvegarder le fichier traité
-output_file = "winner_profile_2023.csv"
-filtered_df.to_csv(output_file, index=False)
+print(ages)
 
-print(f"Le fichier traité a été sauvegardé ici : {output_file}")
-
-# Encoder les données catégoriques
-le_hand = LabelEncoder()
-filtered_df['winner_hand'] = le_hand.fit_transform(filtered_df['winner_hand'].fillna("Unknown"))
-
-# Préparer les données
-X = filtered_df[['winner_hand', 'winner_ht', 'winner_age']]
-y = filtered_df['winner_hand']  # La main dominante comme cible pour un profil typique
-
-# Diviser les données en ensembles d'entraînement et de test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Entraîner le modèle Random Forest
-model = RandomForestClassifier(random_state=42)
-model.fit(X_train, y_train)
-
-# Prédire sur l'ensemble de test
-y_pred = model.predict(X_test)
-
-# Générer le profil type pour 2024
-profile_2024 = pd.DataFrame({
-    'winner_hand': [le_hand.inverse_transform([model.predict([[0, X['winner_ht'].mean(), X['winner_age'].mean()]])[0]])[0]],
-    'winner_ht': [X['winner_ht'].mean()],
-    'winner_age': [X['winner_age'].mean()]
-})
-
-# Affichage du profil type
-print("Profil type du joueur parfait pour 2024 :")
-print(profile_2024)
-
-# Sauvegarder le profil type
-profile_output_file = "winner_profile_2024_prediction.csv"
-profile_2024.to_csv(profile_output_file, index=False)
-
-print(f"Le profil type a été sauvegardé ici : {profile_output_file}")
-
-# Créer un graphique avec matplotlib
-plt.figure(figsize=(8, 6))
-
-# Données à afficher dans le graphique
-labels = ['Winner Hand', 'Winner Height', 'Winner Age']
-
-# Conversion de winner_hand en chaîne pour l'affichage
-winner_hand_str = str(profile_2024['winner_hand'].values[0])
-
-# Liste des valeurs à afficher
-values = [winner_hand_str, profile_2024['winner_ht'].values[0], profile_2024['winner_age'].values[0]]
-
-# Créer un graphique à barres
-plt.bar(labels, values, color=['blue', 'green', 'orange'])
+# Créer le graphique scatterplot
+plt.figure(figsize=(12, 6))
+plt.scatter(ages, heights, c=colors, alpha=0.6)
 
 # Ajouter un titre et des labels
-plt.title("Profil du Joueur Parfait pour 2024")
-plt.xlabel("Caractéristiques")
-plt.ylabel("Valeurs")
+plt.title('Scatterplot: Année vs Taille des Gagnants (1978-2024)', fontsize=14)
+plt.xlabel('Année', fontsize=12)
+plt.ylabel('Taille (cm)', fontsize=12)
+
+# Ajouter une légende manuelle pour les couleurs
+import matplotlib.patches as mpatches
+legend_labels = [mpatches.Patch(color='red', label='Droitier (R)'),
+                 mpatches.Patch(color='blue', label='Gaucher (L)'),
+                 mpatches.Patch(color='grey', label='Inconnu (U)')]
+
+plt.legend(handles=legend_labels, loc='upper left')
+
 
 # Afficher le graphique
 plt.show()
+
