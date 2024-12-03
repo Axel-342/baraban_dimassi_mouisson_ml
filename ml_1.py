@@ -1,4 +1,5 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -44,6 +45,7 @@ profile_2024 = pd.DataFrame({
     'winner_age': [X['winner_age'].mean()]
 })
 
+# Affichage du profil type
 print("Profil type du joueur parfait pour 2024 :")
 print(profile_2024)
 
@@ -52,3 +54,26 @@ profile_output_file = "winner_profile_2024_prediction.csv"
 profile_2024.to_csv(profile_output_file, index=False)
 
 print(f"Le profil type a été sauvegardé ici : {profile_output_file}")
+
+# Créer un graphique avec matplotlib
+plt.figure(figsize=(8, 6))
+
+# Données à afficher dans le graphique
+labels = ['Winner Hand', 'Winner Height', 'Winner Age']
+
+# Conversion de winner_hand en chaîne pour l'affichage
+winner_hand_str = str(profile_2024['winner_hand'].values[0])
+
+# Liste des valeurs à afficher
+values = [winner_hand_str, profile_2024['winner_ht'].values[0], profile_2024['winner_age'].values[0]]
+
+# Créer un graphique à barres
+plt.bar(labels, values, color=['blue', 'green', 'orange'])
+
+# Ajouter un titre et des labels
+plt.title("Profil du Joueur Parfait pour 2024")
+plt.xlabel("Caractéristiques")
+plt.ylabel("Valeurs")
+
+# Afficher le graphique
+plt.show()
