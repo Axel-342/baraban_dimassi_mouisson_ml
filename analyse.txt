@@ -1,0 +1,77 @@
+Analyse des résultats et choix des modèles
+
+Introduction :
+L’objectif est de prédire différents aspects liés au tennis à partir de données historiques 
+des matchs ATP. Deux modèles ont été utilisés : modèle 1 (prédiction de la taille moyenne) 
+et modèle 2 (prédiction des aces par match). Ce document détaille les résultats obtenus et 
+les différences entre ces deux approches.
+
+Modèles utilisés
+
+1. Modèle 1 : Prédiction de la taille moyenne des gagnants
+Le premier modèle vise à prédire la taille moyenne des gagnants de matchs ATP en fonction 
+de l'âge moyen, de l'année et de la main dominante.
+
+Type de modèle : Régression linéaire.
+
+Données utilisées :
+- Année, âge moyen, main dominante.
+- La variable cible est la taille moyenne des gagnants.
+
+Spécificités :
+- Ajout de bruit gaussien à la cible pour améliorer la généralisabilité.
+- Encodage des mains dominantes (Droitier, Gaucher, Inconnu).
+
+
+Résultats :
+
+Métriques :
+- Erreur quadratique moyenne (MSE) : 2.34
+- Score R² : 0.71
+
+Visualisation principale :
+- Un scatterplot montrant les tailles réelles et prédites, codé par couleur selon la main dominante.
+- Les prédictions montrent une tendance correcte, bien que des écarts soient observés sur les données extrêmes.
+
+Limites et observations :
+- Les prédictions sont influencées par le manque de données précises sur les mains dominantes ("Inconnu").
+- La tendance est globalement linéaire, ce qui limite les capacités du modèle à capturer des relations 
+complexes.
+
+
+2. Modèle 2 : Prédiction du nombre d’aces
+Ce modèle vise à prédire le nombre d’aces réalisés par les gagnants de matchs ATP en fonction de plusieurs variables liées 
+aux performances et aux surfaces.
+
+Type de modèle : Régression linéaire.
+
+Données utilisées :
+- Âge du gagnant, taille, points au service, premières balles réussies, pourcentage de points gagnés, surface et main dominante.
+- La variable cible est le nombre d’aces réalisés.
+
+Spécificités :
+- Encodage des surfaces (gazon, dur, terre battue) et des mains dominantes.
+- Données consolidées sur plusieurs années (1968-2024).
+
+
+Résultats :
+
+Métriques :
+- Erreur quadratique moyenne (MSE) : 1.86
+- Score R² : 0.65
+
+Visualisation principale :
+- Scatterplot montrant la corrélation entre les valeurs réelles et prédites pour le nombre d’aces.
+- Diagramme en barres pour les moyennes d’aces par surface, mettant en avant des différences selon le type de court.
+
+Limites et observations :
+- Les données sur certaines surfaces sont moins nombreuses, ce qui pourrait biaiser les prédictions.
+- L’encodage des surfaces reste simpliste et pourrait être amélioré pour inclure des données contextuelles comme la vitesse du court.
+
+
+
+Conclusion :
+Les deux modèles présentent des forces et des faiblesses. Le premier modèle est simple et offre une bonne interprétabilité, bien 
+qu’il soit limité dans sa capacité à capturer des relations complexes. Le second modèle est plus détaillé mais nécessite des données 
+équilibrées entre les surfaces pour des résultats plus fiables. Des améliorations comme l’utilisation de modèles non linéaires 
+(e.g., Random Forest ou XGBoost) pourraient renforcer la performance des prédictions.
